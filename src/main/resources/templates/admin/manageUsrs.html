@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Users</title>
+</head>
+<body>
+    <h1>Manage Users</h1>
+
+    <div th:if="${param.success}">
+        <p style="color: green;">User action successful!</p>
+    </div>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.name}"></td>
+                <td th:text="${user.email}"></td>
+                <td>
+                    <span th:if="${user.active}" style="color: green;">Active</span>
+                    <span th:if="${!user.active}" style="color: red;">Inactive</span>
+                </td>
+                <td>
+                    <a th:href="@{/admin/editUser?userId=${user.id}}">Edit</a> |
+                    <a th:href="@{/admin/activateUser?userId=${user.id}}" th:if="${!user.active}">Activate</a> |
+                    <a th:href="@{/admin/deactivateUser?userId=${user.id}}" th:if="${user.active}">Deactivate</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${param.error}">
+        <p style="color: red;">[[${error}]]</p>
+    </div>
+</body>
+</html>

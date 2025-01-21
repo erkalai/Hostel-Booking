@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>User Management</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+    <h1>User Management</h1>
+
+    <div>
+        <a th:href="@{/admin/users/create}" class="btn btn-primary">Create New User</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Roles</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.name}"></td>
+                <td th:text="${user.email}"></td>
+                <td>
+                    <ul>
+                        <li th:each="role : ${user.roles}" th:text="${role.name}"></li>
+                    </ul>
+                </td>
+                <td th:text="${user.active ? 'Active' : 'Inactive'}"></td>
+                <td>
+                    <a th:href="@{'/admin/users/update/' + ${user.id}}" class="btn btn-warning">Edit</a>
+                    <form th:action="@{'/admin/users/activate/' + ${user.id}}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-success" th:if="!${user.active}">Activate</button>
+                    </form>
+                    <form th:action="@{'/admin/users/deactivate/' + ${user.id}}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger" th:if="${user.active}">Deactivate</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

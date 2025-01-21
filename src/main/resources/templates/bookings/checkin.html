@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+
+
+<link rel="stylesheet" th:href="@{/css/menu.css}">
+<script th:src="@{/js/menu.js}" defer></script>
+
+<title>Check-In Form</title>
+
+<style>
+.container {
+	background-color: #fdfdfd;
+	border-radius: 8px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.233);
+	padding: 15px;
+}
+
+/* Hide the actual radio buttons */
+.form-check-input {
+	display: none;
+}
+
+/* Style the label to look like a button */
+.form-check-label {
+	font-size: 16px;
+	background-color: #f0f0f0;
+	border-radius: 5px;
+	transition: background-color 0.3s ease;
+	cursor: pointer;
+	width: 100%; /* Full width for responsiveness */
+	display: block;
+	text-align: center;
+	padding: 10px;
+	margin: 5px;
+}
+
+.form-check-label:hover {
+	background-color: #729b77;
+}
+
+/* Highlight the label when the radio button is selected */
+.form-check-input:checked+.form-check-label {
+	background-color: #a4ffd2;
+	/* Greenish background for selected option */
+}
+
+.form-group {
+	margin-bottom: 20px;
+}
+
+.form-control {
+	font-size: 16px;
+	padding: 10px;
+	text-align: center;
+}
+
+.room-button {
+	padding: 10px;
+	font-size: 14px;
+	text-align: center;
+	width: 100%; /* Full width for smaller screens */
+}
+
+/* Buttons */
+.buttons {
+	display: flex;
+	justify-content: center;
+	gap: 10px;
+	margin-top: 20px;
+}
+
+.buttons button {
+	font-size: 14px;
+	padding: 8px 16px;
+}
+
+/* Media queries for responsiveness */
+@media ( max-width : 768px) {
+	.row .col-md-4, .row .col-md-3, .row .col-md-2 {
+		flex: 0 0 100%; /* Take full width on smaller screens */
+		max-width: 100%;
+	}
+	.buttons {
+		flex-direction: column;
+	}
+	.buttons button {
+		width: 100%; /* Full width for buttons */
+	}
+	.form-check-label {
+		font-size: 14px;
+		padding: 8px;
+	}
+}
+
+@media ( max-width : 576px) {
+	h2 {
+		font-size: 20px;
+	}
+	.form-check-label {
+		font-size: 12px;
+	}
+	.form-control {
+		font-size: 14px;
+	}
+	.modal-dialog {
+		max-width: 90%;
+	}
+}
+<!--
+-->
+</style>
+
+
+
+</head>
+<body>
+
+	<div class="container mt-4">
+		<div th:replace="common/menu :: menu-bar"></div>
+		<h2 class="mb-4 text-center">Guest Check-In Form</h2>
+		<form th:action="@{/bookings/checkin}" th:object="${guest}"
+			method="post">
+			<!-- Row 1: Program Name, Guest Name, Identity -->
+			<div class="row mb-3">
+				<div class="col-md-4">
+					<label for="programName" class="form-label">Program Name</label> <select
+						class="form-control" id="programName" th:field="*{programName}"
+						required>
+						<option value="" disabled selected>Select Program Name</option>
+						<!-- Starred Programs -->
+						<option th:each="program : ${starredPrograms}"
+							th:value="${program.name}" th:text="${program.name}"></option>
+						<!-- Other Programs -->
+						<option th:each="program : ${otherPrograms}"
+							th:value="${program.name}" th:text="${program.name}"></option>
+					</select>
+				</div>
+
+				<div class="col-md-4">
+					<label for="fullName" class="form-label">Full Name</label> <input
+						type="text" class="form-control" id="fullName" th:field="*{name}"
+						placeholder="Enter full name" required>
+				</div>
+				<div class="col-md-4">
+					<label for="identity" class="form-label">Identity Type</label> <select
+						class="form-control" id="identity" th:field="*{idType}" required>
+						<option value="" disabled selected>Select Identity Type</option>
+						<option value="Aadhar">Aadhar ID</option>
+						<option value="Passport">Passport</option>
+						<option value="Other">Other Government ID</option>
+					</select>
+				</div>
+			</div>
+			<!-- Row 2 -->
+			<div class="row mb-3">
+				<div class="col-md-2">
+					<label for="idNumber" class="form-label">ID Number</label> <input
+						type="text" class="form-control" id="idNumber"
+						th:field="*{idNumber}" placeholder="Enter your ID number" required>
+				</div>
+				<div class="col-md-3">
+					<label for="mobile" class="form-label">Mobile Number</label> <input
+						type="tel" class="form-control" id="mobile"
+						th:field="*{mobileNumber}" placeholder="Enter mobile number"
+						required>
+				</div>
+				<!-- KID input with auto-fill functionality -->
+				<div class="form-group">
+    <label for="kidInput">KID</label>
+      <input
+        type="text"
+        id="kid"
+        class="form-control"
+        placeholder="Enter KID"
+        onkeydown="handleKeyDown(event)"
+    /> 
+			<!--	<div class="col-md-3">
+					<label for="idNumber" class="form-label">KID Number</label> <input
+						type="text" class="form-control" id="kid" th:field="*{kid}"
+						placeholder="Enter your ID number" required>
+				</div> -->
+			</div>
+			<hr>
+			<!-- Row 3: Food Type, Coffee Time, Select Room -->
+			<div class="row mb-3 p-3">
+				<!-- Food Type -->
+				<div class="col-12 col-sm-6 col-md-4 mb-3">
+					<label for="foodType"><strong>Food Type</strong></label><br>
+					<div class="form-check">
+						<input type="radio" id="veg" class="form-check-input"
+							th:field="*{foodType}" value="veg" required> <label
+							class="form-check-label" for="veg">Veg</label>
+					</div>
+					<div class="form-check">
+						<input type="radio" id="nonVeg" class="form-check-input"
+							th:field="*{foodType}" value="non-veg" required> <label
+							class="form-check-label" for="nonVeg">Non-Veg</label>
+					</div>
+				</div>
+
+				<!-- Coffee Time -->
+				<div class="col-12 col-sm-6 col-md-4 mb-3">
+					<label for="coffeeTime"><strong>Coffee Time</strong></label><br>
+					<div class="form-check">
+						<input type="radio" id="time1" class="form-check-input"
+							th:field="*{coffeeTime}" value="5am-6am" required> <label
+							class="form-check-label" for="time1">05:00 AM - 06:00 AM</label>
+					</div>
+					<div class="form-check">
+						<input type="radio" id="time2" class="form-check-input"
+							th:field="*{coffeeTime}" value="6am-7am" required> <label
+							class="form-check-label" for="time2">06:00 AM - 07:00 AM</label>
+					</div>
+				</div>
+
+				<!-- Select Room Button -->
+				<div class="col-12 col-md-4 mb-3">
+					<label for="selectRoom"><strong>Select Room</strong></label><br>
+					<button type="button" class="btn btn-primary"
+						data-bs-toggle="modal" data-bs-target="#selectRoomModal">
+						Select Room</button>
+					<input type="hidden" id="selectedRoom" name="roomId" value=""
+						required>
+					<p id="roomInfo" class="mt-2 text-muted"></p>
+				</div>
+			</div>
+
+			<!-- Modal for Room Selection -->
+			<div class="modal fade" id="selectRoomModal" tabindex="-1"
+				aria-labelledby="selectRoomModalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="selectRoomModalLabel">Select a
+								Room</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal"
+								aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<div class="row">
+								<div th:each="room : ${availableRooms}" class="col-md-4 mb-2">
+									<button type="button"
+										class="btn btn-outline-primary btn-block room-button"
+										th:attr="data-room-id=${room.id}"
+										th:text="${room.roomNumber + ' (Floor: ' + room.floor + ', Capacity: ' + room.capacity + ')'}">
+									</button>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary"
+								data-bs-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+	</div>
+	<hr>
+	<div class="text-center">
+		<button type="submit" class="btn btn-primary">Submit</button>
+		<a href="#" class="btn btn-secondary" id="cancelButton">Cancel</a>
+
+	</div>
+	</form>
+	</div>
+
+
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+	<script>
+	
+    document.getElementById('cancelButton').addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent any default link action
+        const form = document.querySelector('form'); // Select the form element
+        if (form) {
+            form.reset(); // Clear all input fields
+            // Optionally, clear any additional fields not reset (e.g., custom values)
+            document.getElementById('roomInfo').textContent = 'No room selected';
+            document.getElementById('selectedRoom').value = '';
+        }
+    });
+
+	
+	
+	document.addEventListener('DOMContentLoaded', () => {
+	    const roomButtons = document.querySelectorAll('.room-button');
+	    const selectedRoomInput = document.getElementById('selectedRoom');
+	    const roomInfo = document.getElementById('roomInfo');
+
+	    roomButtons.forEach(button => {
+	        button.addEventListener('click', () => {
+	            const roomId = button.getAttribute('data-room-id');
+	            const roomText = button.textContent;
+
+	            // Update hidden input and display the selected room
+	            selectedRoomInput.value = roomId;
+	            roomInfo.textContent = `Selected Room: ${roomText}`;
+
+	            // Close the modal
+	            const modal = document.getElementById('selectRoomModal');
+	            const bootstrapModal = bootstrap.Modal.getInstance(modal);
+	            bootstrapModal.hide();
+
+	            // Remove any leftover backdrops
+	            document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
+	        });
+	    });
+	});
+
+
+
+		function validateRoomSelection() {
+			const roomId = document.getElementById('roomId').value;
+			if (!roomId) {
+				alert('Please select a room before submitting.');
+				return false;
+			}
+			return true;
+		}
+
+		// Set current date and time automatically
+		window.onload = function() {
+			var today = new Date();
+
+			// Format date as YYYY-MM-DD
+			var formattedDate = today.toISOString().split('T')[0];
+			document.getElementById("date").value = formattedDate;
+
+			// Format time as HH:MM
+			var hours = today.getHours();
+			var minutes = today.getMinutes();
+			minutes = minutes < 10 ? '0' + minutes : minutes;
+			var formattedTime = hours + ":" + minutes;
+			document.getElementById("time").value = formattedTime;
+		};
+		
+		
+		
+		function fetchProgramSuggestions() {
+	        let query = document.getElementById('programName').value;
+
+	        if (query.length < 3) {
+	            document.getElementById('programSuggestions').style.display = 'none';
+	            return;
+	        }
+
+	        fetch(`/programs/search?query=${query}`)
+	            .then(response => response.json())
+	            .then(programs => {
+	                const suggestionsList = document.getElementById('programSuggestions');
+	                suggestionsList.innerHTML = '';
+	                if (programs.length > 0) {
+	                    programs.forEach(program => {
+	                        let listItem = document.createElement('li');
+	                        listItem.className = 'list-group-item';
+	                        listItem.textContent = program;
+	                        listItem.onclick = () => {
+	                            document.getElementById('programName').value = program;
+	                            suggestionsList.style.display = 'none';
+	                        };
+	                        suggestionsList.appendChild(listItem);
+	                    });
+	                    suggestionsList.style.display = 'block';
+	                } else {
+	                    suggestionsList.style.display = 'none';
+	                }
+	            });
+	    }
+		
+		  
+		  
+		  
+		  // Fetch Guest details From kid
+		  
+		// Function to handle keydown event
+function handleKeyDown(event) {
+    if (event.key === "Enter") {
+        fetchGuestDetails();
+    }
+}
+
+// Function to fetch guest details using the entered KID
+async function fetchGuestDetails() {
+    const kid = document.getElementById("kidInput").value.trim();
+
+    if (!kid) {
+        alert("Please enter a valid KID.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`/prebooking/guest/${kid}`);
+
+        if (response.ok) {
+            const guest = await response.json();
+            document.getElementById("name").value = guest.name || "N/A";
+            document.getElementById("idType").value = guest.idType || "N/A";
+            document.getElementById("idNumber").value = guest.idNumber || "N/A";
+            document.getElementById("programName").value = guest.programName || "N/A";
+            document.getElementById("mobileNumber").value = guest.mobileNumber || "N/A";
+        } else {
+            alert("Guest not found!");
+            clearFields();
+        }
+    } catch (error) {
+        console.error("Error fetching guest details:", error);
+        alert("An error occurred while fetching guest details.");
+        clearFields();
+    }
+}
+
+// Function to clear fields when no guest is found or an error occurs
+function clearFields() {
+    document.getElementById("name").value = "";
+    document.getElementById("idType").value = "";
+    document.getElementById("idNumber").value = "";
+    document.getElementById("programName").value = "";
+    document.getElementById("mobileNumber").value = "";
+}
+
+
+
+	</script>
+
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

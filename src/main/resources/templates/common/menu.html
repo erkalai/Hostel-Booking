@@ -1,0 +1,28 @@
+<div class="menu-container" th:fragment="menu-bar">
+	<!-- Hamburger Button -->
+	<button class="menu-btn" onclick="toggleMenu()">☰</button>
+
+	<!-- Hidden Menu -->
+	<div id="menu" class="menu-content">
+		<!-- Close Button -->
+		<button class="close-btn" onclick="closeMenu()">X</button>
+
+		<a href="/dashboard">Dashboard</a>
+		<a href="/bookings/checkin">Check
+			IN</a>
+			<a href="/bookings/checkout">Check Out</a>
+			<a
+			href="/rooms/available-rooms">Available Rooms</a>
+			<a
+			href="/rooms/change-room">Change Room</a>
+			 <a href="/complaint">Room
+			Complaint</a> 
+		<a href=""></a> 
+		<a href=""></a> 
+		<a href=""></a>
+		 <a href=""></a>
+		  <a
+			href=""></a>
+			 <a class="nav-link" href="/logout">Logout</a>
+	</div>
+</div>

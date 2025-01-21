@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Update User</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+    <h1>Update User</h1>
+
+    <form th:action="@{/admin/users/update}" method="post">
+        <input type="hidden" name="id" th:value="${user.id}">
+        <div>
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" th:value="${user.name}" required>
+        </div>
+        <div>
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" th:value="${user.email}" required>
+        </div>
+        <div>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password">
+            <small>Leave blank to keep the current password.</small>
+        </div>
+        <div>
+            <label for="roles">Role</label>
+            <select id="roles" name="roles[0].name">
+                <option th:each="role : ${roles}" th:value="${role}" th:text="${role}" 
+                        th:selected="${user.roles[0].name == role}"></option>
+            </select>
+        </div>
+        <div>
+            <button type="submit" class="btn btn-primary">Update</button>
+            <a th:href="@{/admin/users}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</body>
+</html>

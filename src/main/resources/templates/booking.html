@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Room Booking</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2>Create a Booking</h2>
+
+    <div th:if="${successMessage}" class="alert alert-success">
+        <p th:text="${successMessage}"></p>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <!-- Booking Form -->
+    <form th:action="@{/booking}" method="post" th:object="${booking}">
+        
+        <div class="form-group">
+            <label for="roomNumber">Select Room:</label>
+            <select id="roomNumber" name="room" class="form-control" th:field="*{room}">
+                <option th:each="room : ${rooms}" th:value="${room.id}" th:text="'Room ' + ${room.roomNumber}"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="checkInDate">Check-in Date:</label>
+            <input type="date" id="checkInDate" name="checkInDate" class="form-control" th:field="*{checkInDate}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="checkOutDate">Check-out Date:</label>
+            <input type="date" id="checkOutDate" name="checkOutDate" class="form-control" th:field="*{checkOutDate}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="guestName">Guest Name:</label>
+            <input type="text" id="guestName" name="guest.name" class="form-control" th:field="*{guest.name}" placeholder="Enter guest name" required>
+        </div>
+
+        <div class="form-group">
+            <label for="guestMobile">Guest Mobile Number:</label>
+            <input type="text" id="guestMobile" name="guest.mobileNumber" class="form-control" th:field="*{guest.mobileNumber}" placeholder="Enter mobile number" required>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Create Booking</button>
+        </div>
+
+    </form>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Guest List</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-4">
+    <h2>Guests List</h2>
+    <form action="/guests" method="get">
+        <div class="form-row">
+            <div class="form-group col-md-3">
+                <label for="checkInDate">Check-in Date</label>
+                <input type="date" class="form-control" id="checkInDate" name="checkInDate" />
+            </div>
+            <div class="form-group col-md-3">
+                <label for="checkOutDate">Check-out Date</label>
+                <input type="date" class="form-control" id="checkOutDate" name="checkOutDate" />
+            </div>
+            <div class="form-group col-md-3">
+                <label for="idNumber">ID Number</label>
+                <input type="text" class="form-control" id="idNumber" name="idNumber" placeholder="ID Number" />
+            </div>
+            <div class="form-group col-md-2">
+                <label for="month">Month</label>
+                <input type="number" class="form-control" id="month" name="month" min="1" max="12" />
+            </div>
+            <div class="form-group col-md-2">
+                <label for="year">Year</label>
+                <input type="number" class="form-control" id="year" name="year" min="2000" max="2099" />
+            </div>
+            <div class="form-group col-md-2">
+                <label for="status">Status</label>
+                <select class="form-control" id="status" name="status">
+                    <option value="" selected>All</option>
+                    <option th:each="status : ${statuses}" 
+                            th:value="${status}" 
+                            th:text="#{guest.status.${status.name().toLowerCase()}}"></option>
+                </select>
+            </div>
+            <div class="form-group col-md-1">
+                <label>&nbsp;</label>
+                <button type="submit" class="btn btn-primary form-control">Filter</button>
+            </div>
+        </div>
+    </form>
+
+    <table class="table mt-4">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>ID Number</th>
+                <th>Check-in Date</th>
+                <th>Check-out Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="guest : ${guests}">
+                <td th:text="${guest.name}"></td>
+                <td th:text="${guest.idNumber}"></td>
+                <td th:text="${guest.checkInDate}"></td>
+                <td th:text="${guest.checkOutDate}"></td>
+                <td th:text="${guest.status}"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

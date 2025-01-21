@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Complaint Management</title>
+</head>
+<body>
+    <h1>Complaint Management</h1>
+
+    <form th:action="@{/submitComplaint}" th:object="${complaint}" method="post">
+        <div>
+            <label for="name">Name:</label>
+            <input type="text" id="name" th:field="*{name}" />
+        </div>
+
+        <div>
+            <label for="roomNumber">Room Number:</label>
+            <input type="text" id="roomNumber" th:field="*{roomNumber}" />
+        </div>
+
+        <div>
+            <label for="phoneNumber">Phone Number:</label>
+            <input type="text" id="phoneNumber" th:field="*{phoneNumber}" />
+        </div>
+
+        <div>
+            <label for="message">Message:</label>
+            <textarea id="message" th:field="*{message}"></textarea>
+        </div>
+
+        <div>
+            <label for="status">Status:</label>
+            <select id="status" th:field="*{status}">
+                <option value="PENDING">PENDING</option>
+                <option value="COMPLETED">COMPLETED</option>
+            </select>
+        </div>
+
+        <div th:if="${complaint.status == 'COMPLETED'}">
+            <label for="completedDescription">Completed Description:</label>
+            <textarea id="completedDescription" th:field="*{completedDescription}"></textarea>
+        </div>
+
+        <div>
+            <button type="submit">Submit Complaint</button>
+        </div>
+    </form>
+
+    <div th:if="${errorMessage}">
+        <p th:text="${errorMessage}" style="color: red;"></p>
+    </div>
+
+    <div th:if="${successMessage}">
+        <p th:text="${successMessage}" style="color: green;"></p>
+    </div>
+
+    <h2>Complaint List</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Room Number</th>
+                <th>Status</th>
+                <th>Created Date</th>
+                <th>Completed Date</th>
+                <th>Completed Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="complaint : ${complaints}">
+                <td th:text="${complaint.name}"></td>
+                <td th:text="${complaint.roomNumber}"></td>
+                <td th:text="${complaint.status}"></td>
+                <td th:text="${complaint.createdDate}"></td>
+                <td th:text="${complaint.completedDate}"></td>
+                <td th:text="${complaint.completedDescription}"></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
